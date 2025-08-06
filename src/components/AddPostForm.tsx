@@ -62,6 +62,7 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
           title: data.title,
           category: data.category,
           image_url: data.image_url || null,
+          user_id: (await supabase.auth.getUser()).data.user?.id,
         }]);
 
       if (error) throw error;
