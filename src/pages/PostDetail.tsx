@@ -160,7 +160,10 @@ const PostDetail = () => {
             {/* Post Content */}
             <div className="prose prose-lg max-w-none text-foreground">
               {post.content ? (
-                <div className="whitespace-pre-wrap">{post.content}</div>
+                <div 
+                  className="rich-content"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
               ) : (
                 <p className="text-muted-foreground italic">
                   This post doesn't have any content yet.
