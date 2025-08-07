@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X, Code2, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -43,6 +45,7 @@ const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [editCategory, setEditCategory] = useState("");
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,6 +75,7 @@ const PostDetail = () => {
 
         setPost(data);
         setEditContent(data.content || "");
+        setEditCategory(data.category || "");
       } catch (error) {
         console.error("Error fetching post:", error);
         toast({
@@ -154,12 +158,15 @@ const PostDetail = () => {
     try {
       const { error } = await supabase
         .from("posts")
-        .update({ content: editContent })
+        .update({ 
+          content: editContent,
+          category: editCategory 
+        })
         .eq("id", post.id);
 
       if (error) throw error;
 
-      setPost({ ...post, content: editContent });
+      setPost({ ...post, content: editContent, category: editCategory });
       setIsEditing(false);
       
       toast({
@@ -178,6 +185,7 @@ const PostDetail = () => {
 
   const handleCancelEdit = () => {
     setEditContent(post?.content || "");
+    setEditCategory(post?.category || "");
     setIsEditing(false);
   };
 
@@ -423,6 +431,18 @@ const PostDetail = () => {
             <div className="prose prose-lg max-w-none text-foreground">
               {isEditing ? (
                 <div className="space-y-4">
+                  {/* Category Input */}
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Input
+                      id="category"
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      placeholder="Enter category..."
+                      className="max-w-sm"
+                    />
+                  </div>
+                  
                   {/* Editor Mode Toggle */}
                   <div className="flex gap-2 mb-4">
                     <Button
