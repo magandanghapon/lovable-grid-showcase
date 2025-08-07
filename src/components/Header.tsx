@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -53,7 +54,8 @@ const Header = () => {
               />
             </div>
           </div>
-          <div className="ml-4">
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
             {user ? (
               <Button variant="outline" onClick={signOut}>
                 <LogOut className="w-4 h-4 mr-2" />
