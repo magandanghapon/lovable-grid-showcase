@@ -1,0 +1,1 @@
+DELETE FROM public.posts WHERE id = 'e47e29ef-353b-4b12-abe0-ff8f7e4d545b' AND title = 'Sample Post 1';
