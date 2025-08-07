@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Code2, FileText } from "lucide-react";
+import CategoryCombobox from "@/components/CategoryCombobox";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -171,7 +172,11 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter category (e.g., Design, Technology)" {...field} />
+                    <CategoryCombobox
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select or enter category..."
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

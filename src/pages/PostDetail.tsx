@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import CategoryCombobox from "@/components/CategoryCombobox";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X, Code2, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -434,11 +435,10 @@ const PostDetail = () => {
                   {/* Category Input */}
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input
-                      id="category"
+                    <CategoryCombobox
                       value={editCategory}
-                      onChange={(e) => setEditCategory(e.target.value)}
-                      placeholder="Enter category..."
+                      onChange={setEditCategory}
+                      placeholder="Select or enter category..."
                       className="max-w-sm"
                     />
                   </div>
