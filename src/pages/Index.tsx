@@ -5,6 +5,8 @@ import { useAuth } from "@/hooks/useAuth";
 const Index = () => {
   const { user, loading } = useAuth();
 
+  console.log("Index page - user:", user, "loading:", loading);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
