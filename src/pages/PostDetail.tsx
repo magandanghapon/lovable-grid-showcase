@@ -306,6 +306,25 @@ const PostDetail = () => {
                     theme="snow"
                     placeholder="Write your post content..."
                     className="min-h-[200px]"
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                      ],
+                    }}
+                    formats={[
+                      'header', 'bold', 'italic', 'underline', 'strike',
+                      'list', 'bullet', 'script', 'indent',
+                      'color', 'background', 'align',
+                      'link', 'image'
+                    ]}
                   />
                 </div>
               ) : (
