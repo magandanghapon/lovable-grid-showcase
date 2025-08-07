@@ -2,9 +2,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import post1 from "@/assets/post-1.jpg";
 import post2 from "@/assets/post-2.jpg";
 import post3 from "@/assets/post-3.jpg";
@@ -29,8 +33,11 @@ const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -56,6 +63,7 @@ const PostDetail = () => {
         }
 
         setPost(data);
+        setEditContent(data.content || "");
       } catch (error) {
         console.error("Error fetching post:", error);
         toast({
@@ -86,6 +94,71 @@ const PostDetail = () => {
     const index = post?.id ? parseInt(post.id.slice(-1), 16) % fallbackImages.length : 0;
     return fallbackImages[index];
   };
+
+  const handleDelete = async () => {
+    if (!post || !user || post.user_id !== user.id) return;
+
+    try {
+      const { error } = await supabase
+        .from("posts")
+        .delete()
+        .eq("id", post.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Post deleted",
+        description: "Your post has been successfully deleted.",
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete post. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!post || !user || post.user_id !== user.id) return;
+
+    try {
+      const { error } = await supabase
+        .from("posts")
+        .update({ content: editContent })
+        .eq("id", post.id);
+
+      if (error) throw error;
+
+      setPost({ ...post, content: editContent });
+      setIsEditing(false);
+      
+      toast({
+        title: "Post updated",
+        description: "Your post has been successfully updated.",
+      });
+    } catch (error) {
+      console.error("Error updating post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update post. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(post?.content || "");
+    setIsEditing(false);
+  };
+
+  const isOwner = user && post && post.user_id === user.id;
 
   if (isLoading) {
     return (
@@ -155,19 +228,97 @@ const PostDetail = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                 {post.title}
               </h1>
+              
+              {/* Action buttons for post owner */}
+              {isOwner && (
+                <div className="flex gap-2">
+                  {!isEditing ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleEdit}
+                        className="flex items-center gap-2"
+                      >
+                        <Edit className="w-4 h-4" />
+                        Edit
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete your post.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleSaveEdit}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        className="flex items-center gap-2"
+                      >
+                        <X className="w-4 h-4" />
+                        Cancel
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </header>
 
             {/* Post Content */}
             <div className="prose prose-lg max-w-none text-foreground">
-              {post.content ? (
-                <div 
-                  className="rich-content"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+              {isEditing ? (
+                <div className="space-y-4">
+                  <ReactQuill
+                    value={editContent}
+                    onChange={setEditContent}
+                    theme="snow"
+                    placeholder="Write your post content..."
+                    className="min-h-[200px]"
+                  />
+                </div>
               ) : (
-                <p className="text-muted-foreground italic">
-                  This post doesn't have any content yet.
-                </p>
+                post.content ? (
+                  <div 
+                    className="rich-content"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
+                ) : (
+                  <p className="text-muted-foreground italic">
+                    This post doesn't have any content yet.
+                  </p>
+                )
               )}
             </div>
           </article>
