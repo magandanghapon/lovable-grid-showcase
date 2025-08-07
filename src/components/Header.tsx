@@ -9,7 +9,7 @@ const Header = () => {
         <div className="mr-4 flex">
           <a className="mr-6 flex items-center space-x-2" href="/">
             <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              POSTBLOG
+              EAT.LIVE.LOVE
             </span>
           </a>
           <nav className="flex items-center space-x-6 text-sm font-medium">
