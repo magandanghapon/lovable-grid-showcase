@@ -61,6 +61,10 @@ const CategoryCombobox = ({ value, onChange, placeholder = "Select or enter cate
   const handleInputChange = (newValue: string) => {
     setInputValue(newValue);
     onChange(newValue);
+    // Auto-open suggestions when typing
+    if (newValue.length > 0 && !open) {
+      setOpen(true);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -68,12 +72,19 @@ const CategoryCombobox = ({ value, onChange, placeholder = "Select or enter cate
       e.preventDefault();
       onChange(inputValue);
       setOpen(false);
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    } else if (e.key === "ArrowDown" && !open) {
+      setOpen(true);
     }
   };
 
   const filteredCategories = categories.filter(category =>
     category.toLowerCase().includes(inputValue.toLowerCase())
   );
+
+  // Show suggestions when there's input and matching categories
+  const showSuggestions = inputValue.length > 0 && filteredCategories.length > 0;
 
   return (
     <div className={className}>
@@ -97,55 +108,74 @@ const CategoryCombobox = ({ value, onChange, placeholder = "Select or enter cate
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
-          <Command>
-            <CommandInput placeholder="Search categories..." />
+          <Command shouldFilter={false}>
             <CommandList>
-              <CommandEmpty>
-                <div className="p-2">
-                  <p className="text-sm text-muted-foreground">No categories found.</p>
-                  {inputValue && (
+              {inputValue.length === 0 ? (
+                <CommandEmpty>
+                  <p className="p-4 text-sm text-muted-foreground">Start typing to see suggestions...</p>
+                </CommandEmpty>
+              ) : filteredCategories.length === 0 ? (
+                <CommandEmpty>
+                  <div className="p-4">
+                    <p className="text-sm text-muted-foreground mb-2">No matching categories found.</p>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full mt-2"
+                      className="w-full"
                       onClick={() => handleSelect(inputValue)}
                     >
                       Create "{inputValue}"
                     </Button>
+                  </div>
+                </CommandEmpty>
+              ) : (
+                <CommandGroup heading="Suggested categories">
+                  {filteredCategories.map((category) => (
+                    <CommandItem
+                      key={category}
+                      value={category}
+                      onSelect={() => handleSelect(category)}
+                      className="cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === category ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <span>
+                        {category.toLowerCase().startsWith(inputValue.toLowerCase()) ? (
+                          <>
+                            <span className="font-medium text-primary">
+                              {category.substring(0, inputValue.length)}
+                            </span>
+                            {category.substring(inputValue.length)}
+                          </>
+                        ) : (
+                          category
+                        )}
+                      </span>
+                    </CommandItem>
+                  ))}
+                  {inputValue && !categories.some(cat => cat.toLowerCase() === inputValue.toLowerCase()) && (
+                    <CommandItem
+                      value={inputValue}
+                      onSelect={() => handleSelect(inputValue)}
+                      className="cursor-pointer border-t"
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === inputValue ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <span className="text-muted-foreground">Create "</span>
+                      <span className="font-medium">{inputValue}</span>
+                      <span className="text-muted-foreground">"</span>
+                    </CommandItem>
                   )}
-                </div>
-              </CommandEmpty>
-              <CommandGroup>
-                {filteredCategories.map((category) => (
-                  <CommandItem
-                    key={category}
-                    value={category}
-                    onSelect={() => handleSelect(category)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === category ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {category}
-                  </CommandItem>
-                ))}
-                {inputValue && !categories.includes(inputValue) && (
-                  <CommandItem
-                    value={inputValue}
-                    onSelect={() => handleSelect(inputValue)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === inputValue ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    Create "{inputValue}"
-                  </CommandItem>
-                )}
-              </CommandGroup>
+                </CommandGroup>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>
