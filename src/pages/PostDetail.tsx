@@ -129,11 +129,11 @@ const PostDetail = () => {
 
           <article className="space-y-6">
             {/* Hero Image */}
-            <div className="aspect-[16/9] overflow-hidden rounded-xl shadow-lg">
+            <div className="overflow-hidden rounded-xl shadow-lg">
               <img
                 src={getPostImage(post.image_url)}
                 alt={post.title}
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-contain"
               />
             </div>
 
