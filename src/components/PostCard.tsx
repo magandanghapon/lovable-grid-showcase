@@ -27,6 +27,7 @@ const PostCard = ({ id, title, image, category, date }: PostCardProps) => {
           src={image}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          thumbnail={true}
         />
       </div>
       <CardContent className="p-4">
