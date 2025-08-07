@@ -305,7 +305,7 @@ const PostDetail = () => {
                     onChange={setEditContent}
                     theme="snow"
                     placeholder="Write your post content..."
-                    className="min-h-[200px]"
+                    className="min-h-[200px] tooltip-editor"
                     modules={{
                       toolbar: [
                         [{ 'header': [1, 2, 3, false] }],

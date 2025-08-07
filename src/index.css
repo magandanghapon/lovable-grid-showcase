@@ -116,3 +116,386 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Rich text editor toolbar tooltips */
+@layer components {
+  .tooltip-editor .ql-toolbar {
+    .ql-header .ql-picker-label::before,
+    .ql-header .ql-picker-item::before {
+      content: 'Heading';
+    }
+    .ql-header .ql-picker-item[data-value="1"]::before {
+      content: 'Heading 1';
+    }
+    .ql-header .ql-picker-item[data-value="2"]::before {
+      content: 'Heading 2';
+    }
+    .ql-header .ql-picker-item[data-value="3"]::before {
+      content: 'Heading 3';
+    }
+    
+    .ql-bold {
+      position: relative;
+      &::after {
+        content: 'Bold (Ctrl+B)';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-italic {
+      position: relative;
+      &::after {
+        content: 'Italic (Ctrl+I)';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-underline {
+      position: relative;
+      &::after {
+        content: 'Underline (Ctrl+U)';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-strike {
+      position: relative;
+      &::after {
+        content: 'Strikethrough';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-list[value="ordered"] {
+      position: relative;
+      &::after {
+        content: 'Numbered List';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-list[value="bullet"] {
+      position: relative;
+      &::after {
+        content: 'Bullet List';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-blockquote {
+      position: relative;
+      &::after {
+        content: 'Blockquote';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-code-block {
+      position: relative;
+      &::after {
+        content: 'Code Block';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-link {
+      position: relative;
+      &::after {
+        content: 'Insert Link';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-image {
+      position: relative;
+      &::after {
+        content: 'Insert Image';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-clean {
+      position: relative;
+      &::after {
+        content: 'Remove Formatting';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-color {
+      position: relative;
+      &::after {
+        content: 'Text Color';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-background {
+      position: relative;
+      &::after {
+        content: 'Background Color';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+    
+    .ql-align {
+      position: relative;
+      &::after {
+        content: 'Text Alignment';
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: hsl(var(--popover));
+        color: hsl(var(--popover-foreground));
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        border: 1px solid hsl(var(--border));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -148,13 +148,15 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
                       theme="snow"
                       value={field.value}
                       onChange={field.onChange}
-                      className="bg-background"
+                      className="bg-background tooltip-editor"
                       modules={{
                         toolbar: [
                           [{ 'header': [1, 2, 3, false] }],
                           ['bold', 'italic', 'underline', 'strike'],
                           ['blockquote', 'code-block'],
                           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                          [{ 'color': [] }, { 'background': [] }],
+                          [{ 'align': [] }],
                           ['link', 'image'],
                           ['clean']
                         ],
@@ -162,6 +164,7 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
                       formats={[
                         'header', 'bold', 'italic', 'underline', 'strike',
                         'blockquote', 'code-block', 'list', 'bullet',
+                        'color', 'background', 'align',
                         'link', 'image'
                       ]}
                     />
