@@ -6,8 +6,10 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X, Code2, FileText } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X, Code2, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import post1 from "@/assets/post-1.jpg";
@@ -25,6 +27,7 @@ interface Post {
   title: string;
   category: string;
   image_url: string | null;
+  image_urls: string[];
   content: string | null;
   created_at: string;
   user_id: string | null;
@@ -40,6 +43,8 @@ const PostDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [isHtmlMode, setIsHtmlMode] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -90,11 +95,26 @@ const PostDetail = () => {
     });
   };
 
-  const getPostImage = (imageUrl: string | null) => {
-    if (imageUrl) return imageUrl;
+  const getPostImages = () => {
+    if (post?.image_urls && post.image_urls.length > 0) {
+      return post.image_urls;
+    }
+    if (post?.image_url) {
+      return [post.image_url];
+    }
     // Use a consistent fallback based on post id
     const index = post?.id ? parseInt(post.id.slice(-1), 16) % fallbackImages.length : 0;
-    return fallbackImages[index];
+    return [fallbackImages[index]];
+  };
+
+  const images = getPostImages();
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
   const handleDelete = async () => {
@@ -203,14 +223,114 @@ const PostDetail = () => {
           </Button>
 
           <article className="space-y-6">
-            {/* Hero Image */}
-            <div className="overflow-hidden rounded-xl shadow-lg">
-              <img
-                src={getPostImage(post.image_url)}
-                alt={post.title}
-                className="w-full h-auto object-contain"
-              />
+            {/* Hero Image with Carousel */}
+            <div className="space-y-4">
+              <div className="relative overflow-hidden rounded-xl shadow-lg group">
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${post.title} - Image ${currentImageIndex + 1}`}
+                  className="w-full h-auto object-contain cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
+                />
+                
+                {/* Navigation arrows (only show if multiple images) */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+
+                {/* Image counter */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
+                )}
+              </div>
+
+              {/* Thumbnails (only show if multiple images) */}
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {images.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        index === currentImageIndex 
+                          ? 'border-primary shadow-lg' 
+                          : 'border-border hover:border-accent'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`${post.title} - Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Modal Carousel */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogContent className="max-w-7xl w-full h-[90vh] p-0">
+                <div className="relative h-full flex flex-col">
+                  <Carousel className="flex-1">
+                    <CarouselContent>
+                      {images.map((image, index) => (
+                        <CarouselItem key={index}>
+                          <div className="h-[80vh] flex items-center justify-center bg-black">
+                            <img
+                              src={image}
+                              alt={`${post.title} - Image ${index + 1}`}
+                              className="max-w-full max-h-full object-contain"
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {images.length > 1 && (
+                      <>
+                        <CarouselPrevious className="left-4" />
+                        <CarouselNext className="right-4" />
+                      </>
+                    )}
+                  </Carousel>
+
+                  {/* Modal Thumbnails */}
+                  {images.length > 1 && (
+                    <div className="flex gap-2 p-4 overflow-x-auto bg-background/80 backdrop-blur">
+                      {images.map((image, index) => (
+                        <button
+                          key={index}
+                          className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors"
+                        >
+                          <img
+                            src={image}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Post Header */}
             <header className="space-y-4">
