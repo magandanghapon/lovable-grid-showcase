@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import MediaDisplay from "@/components/MediaDisplay";
 
 interface PostCardProps {
   id: string;
@@ -22,7 +23,7 @@ const PostCard = ({ id, title, image, category, date }: PostCardProps) => {
       onClick={handleClick}
     >
       <div className="aspect-[16/10] overflow-hidden">
-        <img
+        <MediaDisplay
           src={image}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

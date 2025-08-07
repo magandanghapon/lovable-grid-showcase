@@ -32,7 +32,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   category: z.string().min(1, "Category is required"),
   content: z.string().min(1, "Content is required"),
-  images: z.array(z.instanceof(File)).optional(),
+  media: z.array(z.instanceof(File)).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,11 +53,11 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
       title: "",
       category: "",
       content: "",
-      images: undefined,
+      media: undefined,
     },
   });
 
-  const uploadImages = async (files: File[]): Promise<string[]> => {
+  const uploadMedia = async (files: File[]): Promise<string[]> => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return [];
 
@@ -92,10 +92,10 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
       let imageUrls: string[] = [];
       let primaryImageUrl = null;
       
-      if (data.images && data.images.length > 0) {
-        imageUrls = await uploadImages(data.images);
+      if (data.media && data.media.length > 0) {
+        imageUrls = await uploadMedia(data.media);
         if (imageUrls.length === 0) {
-          throw new Error("Failed to upload images");
+          throw new Error("Failed to upload media");
         }
         primaryImageUrl = imageUrls[0]; // Use first image as primary
       }
@@ -253,14 +253,14 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
             
             <FormField
               control={form.control}
-              name="images"
+              name="media"
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel>Images (optional)</FormLabel>
+                  <FormLabel>Media (images & videos)</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/*"
                       multiple
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);

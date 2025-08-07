@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import MediaDisplay from "@/components/MediaDisplay";
 import post1 from "@/assets/post-1.jpg";
 import post2 from "@/assets/post-2.jpg";
 import post3 from "@/assets/post-3.jpg";
@@ -226,9 +227,9 @@ const PostDetail = () => {
             {/* Hero Image with Carousel */}
             <div className="space-y-4">
               <div className="relative overflow-hidden rounded-xl shadow-lg group">
-                <img
+                <MediaDisplay
                   src={images[currentImageIndex]}
-                  alt={`${post.title} - Image ${currentImageIndex + 1}`}
+                  alt={`${post.title} - Media ${currentImageIndex + 1}`}
                   className="w-full h-auto object-contain cursor-pointer"
                   onClick={() => setIsModalOpen(true)}
                 />
@@ -274,7 +275,7 @@ const PostDetail = () => {
                           : 'border-border hover:border-accent'
                       }`}
                     >
-                      <img
+                      <MediaDisplay
                         src={image}
                         alt={`${post.title} - Thumbnail ${index + 1}`}
                         className="w-full h-full object-cover"
@@ -294,9 +295,9 @@ const PostDetail = () => {
                       {images.map((image, index) => (
                         <CarouselItem key={index}>
                           <div className="h-[80vh] flex items-center justify-center bg-black">
-                            <img
+                            <MediaDisplay
                               src={image}
-                              alt={`${post.title} - Image ${index + 1}`}
+                              alt={`${post.title} - Media ${index + 1}`}
                               className="max-w-full max-h-full object-contain"
                             />
                           </div>
@@ -319,7 +320,7 @@ const PostDetail = () => {
                           key={index}
                           className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors"
                         >
-                          <img
+                          <MediaDisplay
                             src={image}
                             alt={`Thumbnail ${index + 1}`}
                             className="w-full h-full object-cover"
