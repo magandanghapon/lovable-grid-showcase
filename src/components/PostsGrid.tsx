@@ -3,6 +3,7 @@ import PostCard from "./PostCard";
 import AddPostForm from "./AddPostForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import post1 from "@/assets/post-1.jpg";
 import post2 from "@/assets/post-2.jpg";
 import post3 from "@/assets/post-3.jpg";
@@ -25,6 +26,7 @@ const PostsGrid = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchPosts = async () => {
     try {
@@ -85,7 +87,7 @@ const PostsGrid = () => {
             <h2 className="text-2xl font-bold text-foreground mb-2">Latest Posts</h2>
             <p className="text-muted-foreground">Discover our latest articles and insights</p>
           </div>
-          <AddPostForm onPostAdded={fetchPosts} />
+          {user && <AddPostForm onPostAdded={fetchPosts} />}
         </div>
         
         {posts.length === 0 ? (

@@ -1,8 +1,17 @@
-import { Search } from "lucide-react";
+import { Search, LogOut, LogIn } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate("/auth");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -43,6 +52,19 @@ const Header = () => {
                 className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[300px]"
               />
             </div>
+          </div>
+          <div className="ml-4">
+            {user ? (
+              <Button variant="outline" onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button onClick={handleSignIn}>
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </div>
