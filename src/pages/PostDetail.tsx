@@ -5,7 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Calendar, Tag, Edit, Trash2, Save, X, Code2, FileText } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -38,6 +39,7 @@ const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -300,32 +302,67 @@ const PostDetail = () => {
             <div className="prose prose-lg max-w-none text-foreground">
               {isEditing ? (
                 <div className="space-y-4">
-                  <ReactQuill
-                    value={editContent}
-                    onChange={setEditContent}
-                    theme="snow"
-                    placeholder="Write your post content..."
-                    className="min-h-[200px] tooltip-editor"
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'align': [] }],
-                        ['link', 'image'],
-                        ['clean']
-                      ],
-                    }}
-                    formats={[
-                      'header', 'bold', 'italic', 'underline', 'strike',
-                      'list', 'bullet', 'script', 'indent',
-                      'color', 'background', 'align',
-                      'link', 'image'
-                    ]}
-                  />
+                  {/* Editor Mode Toggle */}
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      type="button"
+                      variant={!isHtmlMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsHtmlMode(false)}
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Rich Text
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={isHtmlMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsHtmlMode(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Code2 className="w-4 h-4" />
+                      HTML Source
+                    </Button>
+                  </div>
+
+                  {isHtmlMode ? (
+                    <Textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      placeholder="Enter your HTML content here..."
+                      className="min-h-[300px] font-mono text-sm"
+                      style={{ fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace' }}
+                    />
+                  ) : (
+                    <ReactQuill
+                      value={editContent}
+                      onChange={setEditContent}
+                      theme="snow"
+                      placeholder="Write your post content..."
+                      className="min-h-[200px] tooltip-editor"
+                      modules={{
+                        toolbar: [
+                          [{ 'header': [1, 2, 3, false] }],
+                          ['bold', 'italic', 'underline', 'strike'],
+                          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                          [{ 'script': 'sub'}, { 'script': 'super' }],
+                          [{ 'indent': '-1'}, { 'indent': '+1' }],
+                          [{ 'color': [] }, { 'background': [] }],
+                          [{ 'align': [] }],
+                          ['blockquote', 'code-block'],
+                          ['link', 'image'],
+                          ['clean']
+                        ],
+                      }}
+                      formats={[
+                        'header', 'bold', 'italic', 'underline', 'strike',
+                        'list', 'bullet', 'script', 'indent',
+                        'color', 'background', 'align', 'blockquote', 'code-block',
+                        'link', 'image'
+                      ]}
+                    />
+                  )}
                 </div>
               ) : (
                 post.content ? (

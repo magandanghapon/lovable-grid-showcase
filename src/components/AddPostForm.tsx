@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Plus, Code2, FileText } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,6 +44,7 @@ interface AddPostFormProps {
 const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -144,30 +145,66 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
                 <FormItem>
                   <FormLabel>Content</FormLabel>
                   <FormControl>
-                    <ReactQuill
-                      theme="snow"
-                      value={field.value}
-                      onChange={field.onChange}
-                      className="bg-background tooltip-editor"
-                      modules={{
-                        toolbar: [
-                          [{ 'header': [1, 2, 3, false] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          ['blockquote', 'code-block'],
-                          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                          [{ 'color': [] }, { 'background': [] }],
-                          [{ 'align': [] }],
-                          ['link', 'image'],
-                          ['clean']
-                        ],
-                      }}
-                      formats={[
-                        'header', 'bold', 'italic', 'underline', 'strike',
-                        'blockquote', 'code-block', 'list', 'bullet',
-                        'color', 'background', 'align',
-                        'link', 'image'
-                      ]}
-                    />
+                    <div className="space-y-2">
+                      {/* Editor Mode Toggle */}
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant={!isHtmlMode ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setIsHtmlMode(false)}
+                          className="flex items-center gap-2"
+                        >
+                          <FileText className="w-4 h-4" />
+                          Rich Text
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={isHtmlMode ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setIsHtmlMode(true)}
+                          className="flex items-center gap-2"
+                        >
+                          <Code2 className="w-4 h-4" />
+                          HTML Source
+                        </Button>
+                      </div>
+
+                      {isHtmlMode ? (
+                        <Textarea
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Enter your HTML content here..."
+                          className="min-h-[200px] font-mono text-sm"
+                          style={{ fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace' }}
+                        />
+                      ) : (
+                        <ReactQuill
+                          theme="snow"
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="bg-background tooltip-editor"
+                          modules={{
+                            toolbar: [
+                              [{ 'header': [1, 2, 3, false] }],
+                              ['bold', 'italic', 'underline', 'strike'],
+                              ['blockquote', 'code-block'],
+                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                              [{ 'color': [] }, { 'background': [] }],
+                              [{ 'align': [] }],
+                              ['link', 'image'],
+                              ['clean']
+                            ],
+                          }}
+                          formats={[
+                            'header', 'bold', 'italic', 'underline', 'strike',
+                            'blockquote', 'code-block', 'list', 'bullet',
+                            'color', 'background', 'align',
+                            'link', 'image'
+                          ]}
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
