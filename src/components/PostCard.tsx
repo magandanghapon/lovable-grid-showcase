@@ -1,15 +1,26 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface PostCardProps {
+  id: string;
   title: string;
   image: string;
   category?: string;
   date?: string;
 }
 
-const PostCard = ({ title, image, category, date }: PostCardProps) => {
+const PostCard = ({ id, title, image, category, date }: PostCardProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/posts/${id}`);
+  };
+
   return (
-    <Card className="group cursor-pointer overflow-hidden bg-gradient-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
+    <Card 
+      className="group cursor-pointer overflow-hidden bg-gradient-card shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1"
+      onClick={handleClick}
+    >
       <div className="aspect-[16/10] overflow-hidden">
         <img
           src={image}

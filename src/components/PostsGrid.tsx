@@ -99,6 +99,7 @@ const PostsGrid = () => {
             {posts.map((post, index) => (
               <PostCard
                 key={post.id}
+                id={post.id}
                 title={post.title}
                 image={getPostImage(post.image_url, index)}
                 category={post.category}
