@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Post {
   id: string;
@@ -17,6 +18,8 @@ interface Post {
 }
 
 const Categories = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -41,6 +44,15 @@ const Categories = () => {
   }, {} as Record<string, Post[]>) || {};
 
   const categories = Object.keys(groupedPosts).sort();
+  
+  // Filter posts based on selected category
+  const filteredGroupedPosts = selectedCategory === "all" 
+    ? groupedPosts 
+    : { [selectedCategory]: groupedPosts[selectedCategory] || [] };
+  
+  const displayCategories = selectedCategory === "all" 
+    ? categories 
+    : [selectedCategory];
 
   if (isLoading) {
     return (
@@ -75,9 +87,30 @@ const Categories = () => {
       <main className="container mx-auto px-4 py-6">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Categories</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             Explore posts organized by category
           </p>
+          
+          {/* Category Filter Buttons */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedCategory === "all" ? "default" : "outline"}
+              onClick={() => setSelectedCategory("all")}
+              className="rounded-full px-4 py-2 text-sm font-medium transition-all hover:scale-105"
+            >
+              All
+            </Button>
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+                className="rounded-full px-4 py-2 text-sm font-medium transition-all hover:scale-105 capitalize"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {categories.length === 0 ? (
@@ -90,7 +123,7 @@ const Categories = () => {
           </Card>
         ) : (
           <div className="space-y-8">
-            {categories.map((category) => (
+            {displayCategories.map((category) => (
               <section key={category}>
                 <Card>
                   <CardHeader>
@@ -98,12 +131,12 @@ const Categories = () => {
                       {category}
                     </CardTitle>
                     <p className="text-muted-foreground">
-                      {groupedPosts[category].length} post{groupedPosts[category].length !== 1 ? 's' : ''}
+                      {filteredGroupedPosts[category].length} post{filteredGroupedPosts[category].length !== 1 ? 's' : ''}
                     </p>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {groupedPosts[category].map((post) => (
+                      {filteredGroupedPosts[category].map((post) => (
                         <PostCard
                           key={post.id}
                           id={post.id}
