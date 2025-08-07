@@ -32,7 +32,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   category: z.string().min(1, "Category is required"),
   content: z.string().min(1, "Content is required"),
-  image_url: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  image: z.instanceof(File).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,21 +53,53 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
       title: "",
       category: "",
       content: "",
-      image_url: "",
+      image: undefined,
     },
   });
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const user = (await supabase.auth.getUser()).data.user;
+    if (!user) return null;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from('post-images')
+      .upload(fileName, file);
+
+    if (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    }
+
+    const { data } = supabase.storage
+      .from('post-images')
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  };
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     
     try {
+      let imageUrl = null;
+      
+      if (data.image) {
+        imageUrl = await uploadImage(data.image);
+        if (!imageUrl) {
+          throw new Error("Failed to upload image");
+        }
+      }
+
       const { error } = await supabase
         .from("posts")
         .insert([{
           title: data.title,
           category: data.category,
           content: data.content,
-          image_url: data.image_url || null,
+          image_url: imageUrl,
           user_id: (await supabase.auth.getUser()).data.user?.id,
         }]);
 
@@ -213,12 +245,20 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
             
             <FormField
               control={form.control}
-              name="image_url"
-              render={({ field }) => (
+              name="image"
+              render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
+                  <FormLabel>Image (optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://example.com/image.jpg" {...field} />
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        onChange(file);
+                      }}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
