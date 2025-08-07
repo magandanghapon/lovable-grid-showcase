@@ -32,7 +32,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   category: z.string().min(1, "Category is required"),
   content: z.string().min(1, "Content is required"),
-  image: z.instanceof(File).optional(),
+  images: z.array(z.instanceof(File)).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,44 +53,51 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
       title: "",
       category: "",
       content: "",
-      image: undefined,
+      images: undefined,
     },
   });
 
-  const uploadImage = async (file: File): Promise<string | null> => {
+  const uploadImages = async (files: File[]): Promise<string[]> => {
     const user = (await supabase.auth.getUser()).data.user;
-    if (!user) return null;
+    if (!user) return [];
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    const uploadPromises = files.map(async (file) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-    const { error } = await supabase.storage
-      .from('post-images')
-      .upload(fileName, file);
+      const { error } = await supabase.storage
+        .from('post-images')
+        .upload(fileName, file);
 
-    if (error) {
-      console.error('Error uploading image:', error);
-      return null;
-    }
+      if (error) {
+        console.error('Error uploading image:', error);
+        return null;
+      }
 
-    const { data } = supabase.storage
-      .from('post-images')
-      .getPublicUrl(fileName);
+      const { data } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(fileName);
 
-    return data.publicUrl;
+      return data.publicUrl;
+    });
+
+    const results = await Promise.all(uploadPromises);
+    return results.filter((url): url is string => url !== null);
   };
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     
     try {
-      let imageUrl = null;
+      let imageUrls: string[] = [];
+      let primaryImageUrl = null;
       
-      if (data.image) {
-        imageUrl = await uploadImage(data.image);
-        if (!imageUrl) {
-          throw new Error("Failed to upload image");
+      if (data.images && data.images.length > 0) {
+        imageUrls = await uploadImages(data.images);
+        if (imageUrls.length === 0) {
+          throw new Error("Failed to upload images");
         }
+        primaryImageUrl = imageUrls[0]; // Use first image as primary
       }
 
       const { error } = await supabase
@@ -99,7 +106,8 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
           title: data.title,
           category: data.category,
           content: data.content,
-          image_url: imageUrl,
+          image_url: primaryImageUrl,
+          image_urls: imageUrls,
           user_id: (await supabase.auth.getUser()).data.user?.id,
         }]);
 
@@ -245,17 +253,18 @@ const AddPostForm = ({ onPostAdded }: AddPostFormProps) => {
             
             <FormField
               control={form.control}
-              name="image"
+              name="images"
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel>Image (optional)</FormLabel>
+                  <FormLabel>Images (optional)</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        onChange(file);
+                        const files = Array.from(e.target.files || []);
+                        onChange(files);
                       }}
                       {...field}
                     />
